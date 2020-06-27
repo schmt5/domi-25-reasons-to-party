@@ -1,30 +1,64 @@
 <script>
-	export let name;
+	import { onMount } from 'svelte';
+
+	let characters = ['🥳', '🎉', '✨'];
+
+	let confetti = new Array(100).fill()
+		.map((_, i) => {
+			return {
+				character: characters[i % characters.length],
+				x: Math.random() * 100,
+				y: -20 - Math.random() * 100,
+				r: 0.1 + Math.random() * 1
+			};
+		})
+		.sort((a, b) => a.r - b.r);
+
+	onMount(() => {
+		let frame;
+
+		function loop() {
+			frame = requestAnimationFrame(loop);
+
+			confetti = confetti.map(emoji => {
+				emoji.y += 0.7 * emoji.r;
+				if (emoji.y > 120) emoji.y = -20;
+				return emoji;
+			});
+		}
+
+		loop();
+
+		return () => cancelAnimationFrame(frame);
+	});
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
-
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
+	:global(body) {
+		overflow: hidden;
+	}
+
+	span {
+		position: absolute;
+		font-size: 5vw;
+	}
+	
+	.container {
+		display: flex;
+		justify-content: center
 	}
 
 	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
+		font-family: 'Indie Flower', cursive;
+		margin-top: 5rem;
+		font-size: 3rem;
 	}
 </style>
+
+{#each confetti as c}
+	<span style="left: {c.x}%; top: {c.y}%; transform: scale({c.r})">{c.character}</span>
+{/each}
+
+<div class="container">
+<h1>Auses guete Domi</h1>
+</div>
